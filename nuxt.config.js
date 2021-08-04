@@ -1,3 +1,4 @@
+import { resolve } from 'path'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
@@ -75,6 +76,6 @@ export default {
   srcDir: 'src/',
 
   alias: {
-    '@': '<srcDir>',
+    components: resolve(__dirname, './src/components'),
   },
 }
