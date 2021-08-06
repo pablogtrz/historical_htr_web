@@ -11,12 +11,13 @@
     <section>
       <ImagePreview
         v-model="imageData"
+        hidden
         :base64-image="base64Image"
         :invert="true"
       />
     </section>
     <section>
-      <h2 style="margin-top: 20px">sss</h2>
+      <h2 style="margin-top: 20px">Image preview</h2>
       <canvas
         ref="canvass"
         width="768"
@@ -24,19 +25,20 @@
         class="image-preview"
         style="border: 1px solid #000"
       ></canvas>
+      <h1 style="margin-top: 20px">{{ prediction }}</h1>
     </section>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import ImageInput from 'components/input/ImageInput.vue'
+import ImagePreview from 'components/input/ImagePreview.vue'
+import Model from '@/services/model'
+import { normalizeTensor } from '@/services/normalizeTensor'
+import { ctcGreedyDecoder } from '@/services/ctcGreedyDecoder'
+import { getTensorFrom } from '@/services/tensorflow'
 import { Tensor3D } from '@tensorflow/tfjs'
-import Model from '../services/model'
-import { normalizeTensor } from '../services/normalizeTensor'
-import { ctcGreedyDecoder } from '../services/ctcGreedyDecoder'
-import { getTensorFrom } from '../services/tensorflow'
-import ImageInput from './input/ImageInput.vue'
-import ImagePreview from './input/ImagePreview.vue'
 
 export default Vue.extend({
   components: {
@@ -49,18 +51,19 @@ export default Vue.extend({
       image: undefined as HTMLImageElement | undefined,
       tensor: undefined,
       imageData: undefined,
+      prediction: '',
     }
   },
   watch: {
     async imageData(n: ImageData) {
       this.drawTempCanvas(n)
-      const model = await Model.createFrom('./keras_model/model.json')
+      const model = await Model.createFrom('/keras_model/model.json')
       let tensor = await getTensorFrom(n)
       tensor = tensor.mean(2, true).expandDims(0)
       tensor = normalizeTensor(tensor)
       const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
       const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
-      console.log(prediction)
+      this.prediction = prediction
     },
   },
   mounted() {

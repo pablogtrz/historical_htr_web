@@ -11,12 +11,13 @@
     <section>
       <ImagePreview
         v-model="imageData"
+        hidden
         :base64-image="base64Image"
         :invert="true"
       />
     </section>
     <section>
-      <h2 style="margin-top: 20px">sss</h2>
+      <h2 style="margin-top: 20px">Image preview</h2>
       <canvas
         ref="canvass"
         width="768"
@@ -24,6 +25,7 @@
         class="image-preview"
         style="border: 1px solid #000"
       ></canvas>
+      <h1 style="margin-top: 20px">{{ prediction }}</h1>
     </section>
   </div>
 </template>
@@ -49,6 +51,7 @@ export default Vue.extend({
       image: undefined as HTMLImageElement | undefined,
       tensor: undefined,
       imageData: undefined,
+      prediction: '',
     }
   },
   watch: {
@@ -60,7 +63,7 @@ export default Vue.extend({
       tensor = normalizeTensor(tensor)
       const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
       const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
-      console.log(prediction)
+      this.prediction = prediction
     },
   },
   mounted() {

@@ -8,24 +8,22 @@
       accept=".jpg,.jpeg,.png"
       @change="setFile"
     />
-    <Button class="block mx-auto" @click="searchFile">
+    <v-btn color="primary" class="block mx-auto" @click="searchFile">
       <div class="align-middle inline-block">
         <UploadIcon />
       </div>
       <span class="align-middle inline-block">Subir imagen</span>
-    </Button>
+    </v-btn>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import UploadIcon from 'components/icon/UploadIcon.vue'
-import Button from 'components/input/Button.vue'
 
 export default Vue.extend({
   components: {
     UploadIcon,
-    Button,
   },
   props: {
     value: {

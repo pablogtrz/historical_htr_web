@@ -15,5 +15,6 @@ export function normalizeTensor(tensor: Tensor<Rank.R3>): Tensor<Rank.R3> {
       )
     }
   })
+
   return bufferedTensor.toTensor() as Tensor<Rank.R3>
 }

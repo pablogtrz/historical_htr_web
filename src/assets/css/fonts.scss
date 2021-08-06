@@ -1,0 +1,40 @@
+@font-face {
+  font-family: SFProText;
+  font-weight: 400;
+  src: url('~/src/assets/font/SFProText-Regular.ttf');
+}
+
+@font-face {
+  font-family: SFProDisplay;
+  font-weight: 400;
+  src: url('~/src/assets/font/SFProDisplay-Regular.ttf');
+}
+
+@font-face {
+  font-family: SFProDisplay;
+  font-weight: 500;
+  src: url('~/src/assets/font/SFProDisplay-Medium.ttf');
+}
+
+@font-face {
+  font-family: RobotoSlab;
+  font-weight: 500;
+  src: url('~/src/assets/font/RobotoSlab-SemiBold.ttf');
+}
+
+.font-title {
+  font-family: RobotoSlab;
+  font-weight: 600;
+  font-size: 3rem;
+}
+
+.font-subtitle {
+  font-family: SFProDisplay;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+
+.font-body {
+  font-family: SFProText;
+  font-weight: 400;
+}
