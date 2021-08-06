@@ -4,7 +4,7 @@ import { IMAGE_WIDTH } from '@/constants/image'
 
 export function normalizeTensor(tensor: Tensor<Rank.R3>): Tensor<Rank.R3> {
   const bufferedTensor = buffer(tensor.shape, tensor.dtype, tensor.dataSync())
-  tensor.dataSync().forEach((value, index) => {
+  tensor.dataSync().forEach((value: number, index: number) => {
     if (value === 255) {
       bufferedTensor.set(
         1,
