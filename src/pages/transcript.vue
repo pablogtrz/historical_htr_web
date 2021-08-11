@@ -1,14 +1,14 @@
 <template>
-  <LandingPage />
+  <Transcript />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import LandingPage from 'components/LandingPage.vue'
+import Transcript from 'components/Transcript.vue'
 
 export default Vue.extend({
   components: {
-    LandingPage,
+    Transcript,
   },
 })
 </script>

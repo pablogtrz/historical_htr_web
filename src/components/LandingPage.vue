@@ -1,91 +1,55 @@
 <template>
-  <div class="main">
-    <h1 class="font-title text-center mb-3">Historical HTR</h1>
-    <p class="font-body text-center mb-6">
-      Herramienta de transcripción de texto en documentos históricos mediante
-      inteligencia artificial.
-    </p>
-    <section class="mb-3">
-      <ImageInput v-model="base64Image" />
-    </section>
-    <section>
-      <ImagePreview
-        v-model="imageData"
-        hidden
-        :base64-image="base64Image"
-        :invert="true"
-      />
-    </section>
-    <section>
-      <h2 style="margin-top: 20px">Image preview</h2>
-      <canvas
-        ref="canvass"
-        width="768"
-        height="128"
-        class="image-preview"
-        style="border: 1px solid #000"
-      ></canvas>
-      <h1 style="margin-top: 20px">{{ prediction }}</h1>
-    </section>
+  <div class="container landing-page">
+    <v-row justify="center" align="center" class="pt-md-15">
+      <v-col cols="12" md="6" order-md="1">
+        <img
+          src="~/assets/img/technology_illustration.png"
+          class="landing-page__image"
+          alt="Home page illustration"
+        />
+      </v-col>
+
+      <v-col cols="0" md="6">
+        <h1 class="text-xl-h2 font-title mb-3 text-center text-md-left">
+          HTR Washington Dataset
+        </h1>
+        <p class="font-body mb-6">
+          Herramienta de transcripción de texto en documentos históricos
+          mediante inteligencia artificial. Entrenada y preparada para funcionar
+          con el dataset
+          <a href="https://fki.tic.heia-fr.ch/databases/washington-database"
+            >IAM-HistDB - Washington Database
+          </a>
+        </p>
+
+        <div class="landing-page__buttons text-center text-md-left">
+          <nuxt-link to="/transcript">
+            <v-btn
+              elevation="0"
+              large
+              color="primary"
+              class="mr-md-5 mx-2 mx-md-0 my-2 mb-my-0"
+            >
+              ¡Quiero probarlo!
+            </v-btn>
+          </nuxt-link>
+
+          <v-btn large color="primary" text>Saber más</v-btn>
+        </div>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import ImageInput from 'components/input/ImageInput.vue'
-import ImagePreview from 'components/input/ImagePreview.vue'
-import Model from '@/services/model'
-import { normalizeTensor } from '@/services/normalizeTensor'
-import { ctcGreedyDecoder } from '@/services/ctcGreedyDecoder'
-import { getTensorFrom } from '@/services/tensorflow'
-import { Tensor3D } from '@tensorflow/tfjs'
-
-export default Vue.extend({
-  components: {
-    ImageInput,
-    ImagePreview,
-  },
-  data() {
-    return {
-      base64Image: '',
-      image: undefined as HTMLImageElement | undefined,
-      tensor: undefined,
-      imageData: undefined,
-      prediction: '',
-    }
-  },
-  watch: {
-    async imageData(n: ImageData) {
-      this.drawTempCanvas(n)
-      const model = await Model.createFrom('/keras_model/model.json')
-      let tensor = await getTensorFrom(n)
-      tensor = tensor.mean(2, true).expandDims(0)
-      tensor = normalizeTensor(tensor)
-      const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
-      const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
-      this.prediction = prediction
-    },
-  },
-  mounted() {
-    this.image = this.$refs.image as HTMLImageElement
-  },
-  methods: {
-    drawTempCanvas(n: ImageData) {
-      const canvas = this.$refs.canvass as HTMLCanvasElement
-      if (canvas) {
-        const ctx = canvas.getContext('2d')!
-        ctx.putImageData(n, 0, 0)
-      }
-    },
-  },
-})
-</script>
 <style lang="scss">
-.main {
-  width: 100vw;
-  min-height: 100vh;
-  margin: 0;
-  box-sizing: border-box;
-  padding: 2rem 3rem;
+.landing-page {
+  &__image {
+    width: inherit;
+  }
+
+  a {
+    text-decoration: none;
+    font-weight: 600;
+  }
 }
 </style>

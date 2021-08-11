@@ -2,6 +2,10 @@ import { resolve } from 'path'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  server: {
+    host: '0.0.0.0',
+  },
+
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
 
@@ -53,6 +57,7 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
+    treeShake: true,
     customVariables: ['~/assets/variables.scss'],
     theme: {
       dark: false,

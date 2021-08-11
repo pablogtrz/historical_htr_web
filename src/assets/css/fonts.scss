@@ -23,18 +23,16 @@
 }
 
 .font-title {
-  font-family: RobotoSlab;
-  font-weight: 600;
-  font-size: 3rem;
+  font-family: RobotoSlab !important;
+  font-weight: 600 !important;
 }
 
 .font-subtitle {
-  font-family: SFProDisplay;
-  font-weight: 400;
-  font-size: 1.2rem;
+  font-family: SFProDisplay !important;
+  font-weight: 400 !important;
 }
 
 .font-body {
-  font-family: SFProText;
-  font-weight: 400;
+  font-family: SFProText !important;
+  font-weight: 400 !important;
 }
