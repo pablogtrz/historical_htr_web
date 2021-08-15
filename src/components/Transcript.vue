@@ -39,11 +39,16 @@
         color="secondary"
         indeterminate
       ></v-progress-circular>
-      <div v-else>
+      <div v-else-if="predictedText">
         <h3 class="mb-2">Predicción</h3>
-        <h1 class="font-title transcript__prediction--result">
-          {{ prediction }}
+        <h1 class="font-title transcript__prediction--result mb-5">
+          {{ predictedText }}
         </h1>
+        <PredictionChart
+          v-if="predictedText"
+          :text="predictedText"
+          :values="predictedValues"
+        />
       </div>
     </section>
 
@@ -62,6 +67,7 @@
 import Vue from 'vue'
 import ImageInputWrapper from 'components/input/ImageInputWrapper.vue'
 import ImagePreview from 'components/input/ImagePreview.vue'
+import PredictionChart from 'components/chart/PredictionChart.vue'
 import Model from '@/services/model'
 import { normalizeTensor } from '@/services/normalizeTensor'
 import { ctcGreedyDecoder } from '@/services/ctcGreedyDecoder'
@@ -72,6 +78,7 @@ export default Vue.extend({
   components: {
     ImageInputWrapper,
     ImagePreview,
+    PredictionChart,
   },
   data() {
     return {
@@ -81,7 +88,8 @@ export default Vue.extend({
       image: undefined as HTMLImageElement | undefined,
       tensor: undefined,
       imageData: undefined as ImageData | undefined,
-      prediction: '',
+      predictedText: '',
+      predictedValues: [] as number[],
     }
   },
   mounted() {
@@ -95,7 +103,8 @@ export default Vue.extend({
         const tensor = await this.getTensorFromImageData(this.imageData!)
         const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
         const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
-        this.prediction = prediction
+        this.predictedText = prediction.text
+        this.predictedValues = prediction.values
       } catch (error) {
         this.snackbar = true
       }
@@ -110,7 +119,8 @@ export default Vue.extend({
     reset() {
       this.base64Image = ''
       this.imageData = undefined
-      this.prediction = ''
+      this.predictedText = ''
+      this.predictedValues = []
     },
   },
 })
