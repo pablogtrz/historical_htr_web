@@ -1,20 +1,53 @@
 <template>
-  <div>
-    <input
-      ref="fileInput"
-      type="file"
-      name="file"
-      style="display: none"
-      accept=".jpg,.jpeg,.png"
-      @change="setFile"
-    />
-    <p>
-      o elegir una
-      <u class="image-input__example--btn" @click="searchFile">
-        <strong> imagen de ejemplo </strong>
-      </u>
-    </p>
-  </div>
+  <v-dialog v-model="dialog" scrollable width="700" max-width="80%">
+    <template #activator="{ on }">
+      <p>
+        o elegir una
+        <strong class="image-input__example--btn" v-on="on">
+          imagen de ejemplo
+        </strong>
+      </p>
+    </template>
+
+    <v-card>
+      <v-card-title class="text-h5"> Elige imagen de ejemplo </v-card-title>
+      <v-card-text>
+        <v-radio-group v-model="selectedImageId">
+          <v-radio value="orders">
+            <template slot="label">
+              <img
+                ref="orders"
+                src="@/assets/img/dataset_examples/orders.png"
+                alt="orders label image"
+              />
+            </template>
+          </v-radio>
+          <v-radio value="twelve">
+            <template slot="label">
+              <img
+                ref="twelve"
+                src="@/assets/img/dataset_examples/twelve.png"
+                alt="twelve label image"
+              />
+            </template>
+          </v-radio>
+          <v-radio value="officers">
+            <template slot="label">
+              <img
+                ref="officers"
+                src="@/assets/img/dataset_examples/officers.png"
+                alt="officers label image"
+              />
+            </template>
+          </v-radio>
+        </v-radio-group>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="green darken-1" text @click="submit"> Aceptar </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
@@ -27,8 +60,15 @@ export default Vue.extend({
       required: true,
     },
   },
+  data() {
+    return {
+      dialog: false,
+      selectedImageId: '',
+      images: ['orders', 'twelve', 'officers'],
+    }
+  },
   computed: {
-    file: {
+    base64Image: {
       set(newValue: string) {
         this.$emit('input', newValue)
       },
@@ -38,25 +78,12 @@ export default Vue.extend({
     },
   },
   methods: {
-    searchFile() {
-      const fileInput = this.$refs.fileInput as HTMLInputElement
-      if (fileInput) {
-        fileInput.click()
-      }
-    },
-    async setFile() {
-      const fileInput = this.$refs.fileInput as HTMLInputElement
-      const file = fileInput.files?.item(0)!
-      this.file = (await this.toBase64(file)) as string
-    },
-    toBase64(file: File): Promise<string | ArrayBuffer | null> {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-
-        reader.readAsDataURL(file)
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = (error) => reject(error)
-      })
+    submit() {
+      this.dialog = false
+      if (!this.selectedImageId) return
+      const image = this.$refs[this.selectedImageId] as HTMLImageElement
+      this.base64Image = image.src
+      this.selectedImageId = ''
     },
   },
 })
@@ -66,11 +93,10 @@ export default Vue.extend({
 .image-input {
   &__example {
     &--btn {
-      color: var(--v-primary);
-      font-weight: 500;
+      color: var(--v-secondary-base);
       cursor: pointer;
 
-      :hover {
+      &:hover {
         opacity: 0.75;
         transition: 0.3s;
       }

@@ -15,7 +15,7 @@ export class Model {
     this.model.summary()
   }
 
-  predict(item: any) { // TODO type it well
+  predict(item: any) {
     return this.model.predict(item)
   }
 }

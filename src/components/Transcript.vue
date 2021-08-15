@@ -1,6 +1,6 @@
 <template>
   <div class="transcript">
-    <v-btn v-if="base64Image" color="primary" text @click="reset">
+    <v-btn v-if="base64Image" color="primary" class="mb-3" text @click="reset">
       <v-icon class="mr-1">mdi-restart</v-icon>
       Elegir otra imagen
     </v-btn>
@@ -20,8 +20,12 @@
     />
 
     <section v-if="base64Image" class="mb-5">
-      <h3>Previsualización</h3>
-      <img :src="base64Image" class="transcript__preview" alt="Image Preview" />
+      <h3 class="mb-2">Previsualización</h3>
+      <img
+        :src="base64Image"
+        class="transcript__preview mb-2"
+        alt="Image Preview"
+      />
       <v-btn
         color="secondary"
         :disabled="!base64Image"
@@ -39,12 +43,21 @@
         indeterminate
       ></v-progress-circular>
       <div v-else>
-        <h3>Predicción</h3>
+        <h3 class="mb-2">Predicción</h3>
         <h1 class="font-title transcript__prediction--result">
           {{ prediction }}
         </h1>
       </div>
     </section>
+
+    <v-snackbar v-model="snackbar" color="error">
+      Ha ocurrido un error inesperado
+      <template #action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -66,6 +79,7 @@ export default Vue.extend({
   data() {
     return {
       base64Image: '',
+      snackbar: false,
       loading: false,
       image: undefined as HTMLImageElement | undefined,
       tensor: undefined,
@@ -79,11 +93,16 @@ export default Vue.extend({
   methods: {
     async predict() {
       this.loading = true
-      const model = await Model.createFrom('/keras_model/model.json')
-      const tensor = await this.getTensorFromImageData(this.imageData!)
-      const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
-      const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
-      this.prediction = prediction
+      try {
+        const model = await Model.createFrom('/keras_model/model.json')
+        const tensor = await this.getTensorFromImageData(this.imageData!)
+        const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
+        const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
+        this.prediction = prediction
+      } catch (error) {
+        this.snackbar = true
+        console.error(error)
+      }
       this.loading = false
     },
     async getTensorFromImageData(imageData: ImageData) {
@@ -113,6 +132,7 @@ export default Vue.extend({
 
   &__preview {
     max-width: -webkit-fill-available;
+    border: 1px solid var(--v-secondary-base);
   }
 }
 </style>

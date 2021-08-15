@@ -1,32 +1,43 @@
 <template>
-  <div
-    ref="imageInput"
-    class="image-input__drop"
-    draggable="true"
-    @drop.prevent="addDropFile"
-    @dragover.prevent
-    @dragenter="onDragStart"
-    @dragleave="onDragLeave"
-    @click="searchFile"
-  >
-    <input
-      ref="fileInput"
-      type="file"
-      name="file"
-      hidden
-      accept=".jpg,.jpeg,.png"
-      @change="setFile"
-    />
-    <img
-      src="@/assets/img/image.svg"
-      class="image-input__drop--img d-block mx-auto mb-3"
-      alt="Image icon"
-    />
-    <p v-if="!isDragging" class="image-input__drop--text">
-      Arrastra la imagen o clickea para
-      <strong class="image-input__drop--btn">buscar en tus archivos</strong>
-    </p>
-    <p v-else class="image-input__drop--text">Suelta el archivo</p>
+  <div>
+    <div
+      ref="imageInput"
+      class="image-input__drop"
+      draggable="true"
+      @drop.prevent="addDropFile"
+      @dragover.prevent
+      @dragenter="onDragStart"
+      @dragleave="onDragLeave"
+      @click="searchFile"
+    >
+      <input
+        ref="fileInput"
+        type="file"
+        name="file"
+        hidden
+        accept=".jpg,.jpeg,.png"
+        @change="setFile"
+      />
+      <img
+        src="@/assets/img/image.svg"
+        class="image-input__drop--img d-block mx-auto mb-3"
+        alt="Image icon"
+      />
+      <p v-if="!isDragging" class="image-input__drop--text">
+        Arrastra la imagen o clickea para
+        <strong class="image-input__drop--btn">buscar en tus archivos</strong>
+      </p>
+      <p v-else class="image-input__drop--text">Suelta el archivo</p>
+    </div>
+
+    <v-snackbar v-model="snackbar" color="error">
+      El formato de archivo debe ser ".png", ".jpg" o ".jpeg"
+      <template #action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -42,6 +53,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      snackbar: false,
       isDragging: false,
     }
   },
@@ -81,7 +93,7 @@ export default Vue.extend({
       if (this.isValidFileType(file)) {
         this.file = (await this.toBase64(file)) as string
       } else {
-        // TODO throw snackbar error
+        this.snackbar = true
         this.onDragLeave()
       }
     },
