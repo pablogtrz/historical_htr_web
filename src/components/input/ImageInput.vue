@@ -1,35 +1,49 @@
 <template>
-  <div id="drag-and-drop" class="drag-and-drop">
+  <div
+    ref="imageInput"
+    class="image-input__drop"
+    draggable="true"
+    @drop.prevent="addDropFile"
+    @dragover.prevent
+    @dragenter="onDragStart"
+    @dragleave="onDragLeave"
+    @click="searchFile"
+  >
     <input
       ref="fileInput"
       type="file"
       name="file"
-      style="display: none"
+      hidden
       accept=".jpg,.jpeg,.png"
       @change="setFile"
     />
-    <v-btn color="primary" class="block mx-auto" @click="searchFile">
-      <div class="align-middle inline-block">
-        <UploadIcon />
-      </div>
-      <span class="align-middle inline-block">Subir imagen</span>
-    </v-btn>
+    <img
+      src="@/assets/img/image.svg"
+      class="image-input__drop--img d-block mx-auto mb-3"
+      alt="Image icon"
+    />
+    <p v-if="!isDragging" class="image-input__drop--text">
+      Arrastra la imagen o clickea para
+      <strong class="image-input__drop--btn">buscar en tus archivos</strong>
+    </p>
+    <p v-else class="image-input__drop--text">Suelta el archivo</p>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import UploadIcon from 'components/icon/UploadIcon.vue'
 
 export default Vue.extend({
-  components: {
-    UploadIcon,
-  },
   props: {
     value: {
       type: String,
       required: true,
     },
+  },
+  data() {
+    return {
+      isDragging: false,
+    }
   },
   computed: {
     file: {
@@ -51,7 +65,6 @@ export default Vue.extend({
     async setFile() {
       const fileInput = this.$refs.fileInput as HTMLInputElement
       const file = fileInput.files?.item(0)!
-      console.log(await this.toBase64(file))
       this.file = (await this.toBase64(file)) as string
     },
     toBase64(file: File): Promise<string | ArrayBuffer | null> {
@@ -63,29 +76,64 @@ export default Vue.extend({
         reader.onerror = (error) => reject(error)
       })
     },
+    async addDropFile(event: DragEvent) {
+      const file = event.dataTransfer!.files[0]
+      if (this.isValidFileType(file)) {
+        this.file = (await this.toBase64(file)) as string
+      } else {
+        // TODO throw snackbar error
+        this.onDragLeave()
+      }
+    },
+    onDragStart() {
+      const input = this.$refs.imageInput as HTMLElement
+      input.classList.add('dragging')
+    },
+    onDragLeave() {
+      const input = this.$refs.imageInput as HTMLElement
+      input.classList.remove('dragging')
+    },
+    isValidFileType(file: File) {
+      const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png']
+      return allowedTypes.includes(file.type)
+    },
   },
 })
 </script>
 
-<style lang="scss" scoped>
-.drag-and-drop {
-  display: block;
-  margin: 4px auto 0;
-  padding: 1rem 3.5rem;
-  border-radius: 10px;
-  text-align: center;
-  color: var(--v-primary);
-  max-width: 25rem;
-  transition: 0.5s;
-  border: 1px darken(white, 10) solid;
+<style lang="scss">
+.image-input {
+  &__drop {
+    display: block;
+    margin: 0 auto;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 35rem;
+    transition: 0.25s;
+    background: darken(white, 5);
+    border: 1px darken(white, 15) solid;
+    cursor: pointer;
+
+    &--btn {
+      color: var(--v-secondary-base);
+      pointer-events: none;
+    }
+    &--img {
+      pointer-events: none;
+    }
+    &--text {
+      pointer-events: none;
+    }
+  }
 }
 
-.dragover {
-  margin: 0px auto;
-  transition: 0.15s;
-  padding: calc(1rem - 1px) 3.5rem;
-  border: 2px darken(white, 20) dashed;
-  background: lighten(white, 10);
+.image-input__drop:hover {
+  background: white;
+}
+
+.dragging {
+  background: var(--v-primary-lighten3);
   cursor: grabbing;
 }
 </style>

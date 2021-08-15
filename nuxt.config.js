@@ -14,8 +14,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - historical_htr',
-    title: 'historical_htr',
+    titleTemplate: '%s - HTR Washington',
+    title: 'HTR Washington',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -60,13 +60,14 @@ export default {
     treeShake: true,
     customVariables: ['~/assets/variables.scss'],
     theme: {
+      options: {
+        customProperties: true,
+      },
       dark: false,
       themes: {
-        dark: {
-          primary: '#023047',
-          accent: colors.grey.darken3,
-          secondary: 'rgb(8, 168, 138)',
-          info: colors.teal.lighten1,
+        light: {
+          primary: '#08a88b',
+          secondary: '#023047',
           warning: '#ffbe0b',
           error: '#d62828',
           success: '#55a630',
