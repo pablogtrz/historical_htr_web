@@ -6,10 +6,7 @@
     </v-btn>
 
     <section v-if="!base64Image" class="mb-5 transcript__input">
-      <h3>1. Selecciona una imagen</h3>
-      <p class="font-body mb-6">
-        Selecciona una imagen de prueba o sube una de tus archivos.
-      </p>
+      <h3 class="mb-2">Selecciona una imagen</h3>
       <ImageInputWrapper v-model="base64Image" />
     </section>
     <ImagePreview
@@ -101,7 +98,6 @@ export default Vue.extend({
         this.prediction = prediction
       } catch (error) {
         this.snackbar = true
-        console.error(error)
       }
       this.loading = false
     },
@@ -124,7 +120,7 @@ export default Vue.extend({
 .transcript {
   margin: 0 auto;
   text-align: center;
-  padding: 1rem 3rem;
+  padding: 0.5rem 1.75rem;
 
   &__prediction {
     display: block;

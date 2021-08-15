@@ -1,5 +1,4 @@
 import { resolve } from 'path'
-import colors from 'vuetify/es5/util/colors'
 
 export default {
   server: {
@@ -14,7 +13,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - HTR Washington',
+    titleTemplate: '%s',
     title: 'HTR Washington',
     meta: [
       { charset: 'utf-8' },

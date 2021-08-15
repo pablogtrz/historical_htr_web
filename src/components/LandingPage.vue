@@ -34,7 +34,9 @@
             </v-btn>
           </nuxt-link>
 
-          <v-btn large color="primary" text>Saber más</v-btn>
+          <v-btn large color="primary" text @click="$router.push('/info')"
+            >Cómo funciona</v-btn
+          >
         </div>
       </v-col>
     </v-row>

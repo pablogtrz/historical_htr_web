@@ -14,7 +14,9 @@
     </v-app-bar>
     <v-main>
       <v-container>
-        <Nuxt />
+        <div class="container">
+          <Nuxt />
+        </div>
       </v-container>
     </v-main>
     <v-footer app fixed>
