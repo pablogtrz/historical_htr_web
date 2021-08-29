@@ -2,7 +2,7 @@
   <div class="performance">
     <section>
       <h3 class="mb-2">Selecciona un backend</h3>
-      <p>
+      <p class="performance__subtitle">
         Se ejecutará la transcripción de una imagen utilizando el backend
         seleccionado y mostrando el tiempo que ha tardado el cálculo
       </p>
@@ -143,6 +143,11 @@ export default Vue.extend({
 
   &__prediction {
     display: block;
+  }
+
+  &__subtitle {
+    max-width: 600px;
+    margin: auto;
   }
 
   &__radio-buttons {
