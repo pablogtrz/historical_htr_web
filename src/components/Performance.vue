@@ -1,28 +1,18 @@
 <template>
-  <div class="transcript">
-    <v-btn v-if="base64Image" color="primary" class="mb-3" text @click="reset">
-      <v-icon class="mr-1">mdi-restart</v-icon>
-      Elegir otra imagen
-    </v-btn>
-
-    <section v-if="!base64Image" class="mb-5 transcript__input">
-      <h3 class="mb-2">Selecciona una imagen</h3>
-      <ImageInputWrapper v-model="base64Image" />
-    </section>
-    <ImagePreview
-      v-model="imageData"
-      hidden
-      :base64-image="base64Image"
-      :invert="true"
-    />
-
-    <section v-if="base64Image" class="mb-5">
-      <h3 class="mb-2">Previsualización</h3>
-      <img
-        :src="base64Image"
-        class="transcript__preview mb-2"
-        alt="Image Preview"
-      />
+  <div class="performance">
+    <section>
+      <h3 class="mb-2">Selecciona un backend</h3>
+      <p>
+        Se ejecutará la transcripción de una imagen utilizando el backend
+        seleccionado y mostrando el tiempo que ha tardado el cálculo
+      </p>
+      <v-radio-group
+        v-model="selectedBackend"
+        class="performance__radio-buttons"
+      >
+        <v-radio label="WebGL" :value="0"></v-radio>
+        <v-radio label="CPU" :value="1"></v-radio>
+      </v-radio-group>
       <v-btn
         color="secondary"
         :disabled="!base64Image"
@@ -30,7 +20,6 @@
         @click="predict"
         >Transcribir</v-btn
       >
-      <v-divider></v-divider>
     </section>
 
     <section v-if="base64Image" class="mb-5 transcript__prediction">
@@ -40,14 +29,24 @@
         indeterminate
       ></v-progress-circular>
       <div v-else-if="predictedText">
-        <h3 class="mb-2">Predicción</h3>
+        <h3 class="mb-2">Tiempo</h3>
         <h1 class="font-title transcript__prediction--result mb-5">
-          {{ predictedText }}
+          {{ performance }} s
         </h1>
-        <PredictionChart
-          v-if="predictedText"
-          :text="predictedText"
-          :values="predictedValues"
+      </div>
+
+      <div hidden>
+        <img
+          ref="image"
+          src="@/assets/img/dataset_examples/orders.png"
+          class="transcript__preview mb-2"
+          alt="Image Preview"
+        />
+        <canvas ref="canvas" width="206" height="120"></canvas>
+        <ImagePreview
+          v-model="imageData"
+          :base64-image="base64Image"
+          :invert="true"
         />
       </div>
     </section>
@@ -65,9 +64,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import ImageInputWrapper from 'components/input/ImageInputWrapper.vue'
 import ImagePreview from 'components/input/ImagePreview.vue'
-import PredictionChart from 'components/chart/PredictionChart.vue'
 import Model from '@/services/model'
 import { normalizeTensor } from '@/services/normalizeTensor'
 import { ctcGreedyDecoder } from '@/services/ctcGreedyDecoder'
@@ -77,9 +74,7 @@ import * as tfjs from '@tensorflow/tfjs'
 
 export default Vue.extend({
   components: {
-    ImageInputWrapper,
     ImagePreview,
-    PredictionChart,
   },
   data() {
     return {
@@ -91,22 +86,40 @@ export default Vue.extend({
       imageData: undefined as ImageData | undefined,
       predictedText: '',
       predictedValues: [] as number[],
+      selectedBackend: 0,
+      performance: '0.00',
     }
+  },
+  watch: {
+    selectedBackend(newBackend: number) {
+      const backend = newBackend === 0 ? 'webgl' : 'cpu'
+      tfjs.setBackend(backend)
+    },
   },
   mounted() {
     this.image = this.$refs.image as HTMLImageElement
+    this.base64Image = this.toBase64(this.image)
     tfjs.setBackend('webgl')
   },
   methods: {
+    toBase64(img: HTMLImageElement): string {
+      const canvas = this.$refs.canvas as HTMLCanvasElement
+      const ctx = canvas.getContext('2d')
+      ctx!.drawImage(img, 0, 0)
+      return canvas.toDataURL('image/png')
+    },
     async predict() {
       this.loading = true
       try {
+        const t1 = performance.now()
         const model = await Model.createFrom('/keras_model/model.json')
         const tensor = await this.getTensorFromImageData(this.imageData!)
         const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
         const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
         this.predictedText = prediction.text
         this.predictedValues = prediction.values
+        const t2 = performance.now()
+        this.performance = ((t2 - t1) / 1000).toFixed(2)
       } catch (error) {
         this.snackbar = true
       }
@@ -118,18 +131,12 @@ export default Vue.extend({
       tensor = normalizeTensor(tensor)
       return tensor
     },
-    reset() {
-      this.base64Image = ''
-      this.imageData = undefined
-      this.predictedText = ''
-      this.predictedValues = []
-    },
   },
 })
 </script>
 
 <style lang="scss">
-.transcript {
+.performance {
   margin: 0 auto;
   text-align: center;
   padding: 0.5rem 1.75rem;
@@ -138,9 +145,9 @@ export default Vue.extend({
     display: block;
   }
 
-  &__preview {
-    max-width: -webkit-fill-available;
-    border: 1px solid var(--v-secondary-base);
+  &__radio-buttons {
+    width: fit-content;
+    margin: 0 auto;
   }
 }
 </style>
