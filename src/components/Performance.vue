@@ -34,22 +34,24 @@
           {{ performance }} s
         </h1>
       </div>
-
-      <div hidden>
-        <img
-          ref="image"
-          src="@/assets/img/dataset_examples/orders.png"
-          class="transcript__preview mb-2"
-          alt="Image Preview"
-        />
-        <canvas ref="canvas" width="206" height="120"></canvas>
-        <ImagePreview
-          v-model="imageData"
-          :base64-image="base64Image"
-          :invert="true"
-        />
-      </div>
     </section>
+
+    <div>
+      <img
+        ref="image"
+        hidden
+        src="@/assets/img/dataset_examples/orders.png"
+        class="transcript__preview mb-2"
+        alt="Image Preview"
+      />
+      <canvas ref="canvas" hidden width="206" height="120"></canvas>
+      <ImagePreview
+        v-model="imageData"
+        hidden
+        :base64-image="base64Image"
+        :invert="true"
+      />
+    </div>
 
     <v-snackbar v-model="snackbar" color="error">
       Ha ocurrido un error inesperado
