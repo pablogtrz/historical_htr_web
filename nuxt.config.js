@@ -28,7 +28,7 @@ export default {
   css: ['@/assets/css/main.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['@/plugins/importApexcharts.js'],
+  plugins: ['@/plugins/importApexcharts.js', '@/plugins/importVuetify.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
