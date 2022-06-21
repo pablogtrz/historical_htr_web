@@ -1,5 +1,6 @@
 {
   "name": "historical_htr",
+  "description": "Web app which implements an artificial intelligence to transcript text in images from Washington Dataset. This dataset is made from documents written by George Washington on 18th century.",
   "version": "1.0.0",
   "private": true,
   "scripts": {
